@@ -36,43 +36,65 @@
 
 % -----------------------------------2--------------------------------------
 
-% load("STOCKHOLMSDATA.mat");
-% 
-% c3 = [];
-% c1 = repelem(1, 70080);
-% c1 = c1';
-% 
-% c2 = 0:1:70079;
-% c2 = c2';
-% % c3 = sin(2.*pi./(365*24).*((0:1:70080)));
-% 
-% for n = 0:70079
-%     a = sin(((2*pi)/(365*24))*(n-(117*24)));
-%     c3 = [c3, a];
-% end
-% 
-% c3 = c3';
-% 
-% t = 0:1:70080;
-% t = t';
-% 
-% Ainterp = [c1 c2 c3];
-% 
-% A = Ainterp;
-% y = Tm;
-% 
-% cinterp = Ainterp\Tm;
-% x = 0:1:70079;
-% T = @(x) cinterp(1) + cinterp(2).*x + cinterp(3).*sin(((2*pi)/(365*24))*(x-(117*24)));
-% 
-% res = Ainterp*cinterp - y;
-% resnorm = norm(res).^2;
-% disp(resnorm)
-% 
-% plot(x, T(x))
-% 
-% xlabel("Tid")
-% ylabel("Temperatur i C")
+load("STOCKHOLMSDATA.mat");
+
+c3 = [];
+c1 = repelem(1, 70080);
+c1 = c1';
+
+c2 = 1:1:70080;
+c2 = c2';
+% c3 = sin(2.*pi./(365*24).*((0:1:70080)));
+
+for n = 1:70080
+    a = sin(((2*pi)/(365*24))*(n-(117*24)));
+    c3 = [c3, a];
+end
+
+c3 = c3';
+
+t = 0:1:70080;
+t = t';
+
+Ainterp = [c1 c2 c3];
+
+A = Ainterp;
+y = Tm;
+
+cinterp = Ainterp\Tm;
+x = 1:1:70080;
+T = cinterp(1) + cinterp(2).*x + cinterp(3).*sin(((2*pi)/(365*24))*(x-(117*24)));
+t240 = cinterp(1) + cinterp(2).*x + cinterp(3).*sin(((2*pi)/(365*24))*(x-240));
+
+plot(x,Tm);
+
+hold on
+
+plot(x, t240);
+plot(x,T, LineWidth=2)
+
+res = Ainterp*cinterp - y;
+resnorm = norm(res).^2;
+disp(resnorm)
+
+for i = 1:4368
+    x = 0:0.1:100;
+    t = cinterp(1) + cinterp(2).*x + cinterp(3).*sin(((2*pi)/(365*24))*(x-i));
+    plot(x,t);
+end
+
+Tl = min(T);
+Th = max(T);
+
+yline(Tl);
+yline(Th);
+
+hold off
+
+legend("ts=0-4368", "ts=2400", "ts=2808", "moille", "moille")
+
+xlabel("Tid")
+ylabel("Temperatur i C")
 
 % %T = @(t) c(1) + c(2).*t + c(3).*sin(2.*pi.*(t-240));
 % 
@@ -80,51 +102,41 @@
 
 % -------------------------------------3------------------------------------
 
-% Q = @(t) (9+5*(cos(0.2*t)).^2);
+% Q = @(t) (9+5*(cos(0.4*t)).^2);
 % c = @(t) (5*exp(-0.5*t)+2*exp(0.15*t));
 % f = @(t) Q(t).*c(t);
 % 
 % x0 = 3;
 % x = 9;
-% 
 % n = [10 20 40];
-%n = 10;
-
-% h = (x-x0)/n;
-% t = x0:h:x;
-% t2 = x0:0.3:x;
-% t4 = x0:0.15:x;
-
+% 
+% 
 % intvalues = [];
-
+% 
 % for i = n
 %     h = (x-x0)/i;
 %     t = x0:h:x;
-%     TSim = ((h/3)*(sum(f(t(2:2:end-1)))*4+(sum(f(t(3:2:end-2)))*2+f(t(1))+f(t(end)))));
+%     TSim = (h/3)*(4*(sum(f(t(2:2:end-1)))) + 2*(sum(f(t(3:2:end-2)))) + f(t(1)) + f(t(end)));
 %     intvalues = [intvalues, TSim];
 % end
-
-% Tsim = (h/3).*(f(t(1))+(sum(f(t(2:2:end-1)))*4 +(sum(f(t(3:2:end-2)))*2 + f(t(end)))));
-% T2Sim = (h/6).*(f(t2(1))+(sum(f(t2(2:2:end-1)))*4 +(sum(f(t2(3:2:end-2)))*2 + f(t2(end)))));
-% T4Sim = (h/12).*(f(t4(1))+(sum(f(t4(2:2:end-1)))*4 +(sum(f(t4(3:2:end-2)))*2 + f(t4(end)))));
-% 
-% intvalues = [Tsim, T2Sim, T4Sim];
 % 
 % nog = log2(abs(intvalues(2)-intvalues(1))/abs(intvalues(3)-intvalues(2)));
 
+%disp('Integralen med Simpsons metod blir')
+
 % -------------------------------------4------------------------------------
 
-t0 = 0;
-tspan = [t0, 23];
-y0 = [0 0];
-[TOUT, YOUT]= ode45(@odesyst, tspan, y0);
-TOUT;
-YOUT;
-y = YOUT(1:end,1);
-ymax = max(y);
-
-if ymax > 100
-    disp("Du kmr dö")
-else
-    disp("fortsätt")
-end
+% t0 = 0;
+% tspan = [t0, 23];
+% y0 = [0 0];
+% [TOUT, YOUT]= ode45(@odesyst, tspan, y0);
+% TOUT;
+% YOUT;
+% y = YOUT(1:end,1);
+% ymax = max(y);
+% 
+% if ymax > 100
+%     disp("Du kmr dö")
+% else
+%     disp("fortsätt")
+% end
