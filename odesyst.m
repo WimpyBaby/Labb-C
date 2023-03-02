@@ -15,7 +15,7 @@ if u<=30
     du = v;
     dv = g-sign(v)*(cd/m)*(v^2);
     f = [du; dv];
-else u > 30;
+else
     du = v;
     dv = g-sign(v)*(cd/m)*(v^2)-((k/m)*(u-L))-((lambda/m)*v);
     f = [du; dv];

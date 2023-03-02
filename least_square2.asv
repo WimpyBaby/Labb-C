@@ -1,0 +1,21 @@
+load("STOCKHOLMSDATA.mat");
+
+w = (2*pi)/(365*24);
+t = (1:70080)';
+col1 = ones(70080, 1);
+col2 = t;
+
+resnorm = [];
+
+for ts = 1:4386
+
+    col3 = sin(((2*pi)/(365*24))*(t-ts));
+    A = [col1, col2, col3];
+    c = A\Tm;
+    T = c(1) + c(2)*t + c(3)*sin(w*(t-ts));
+
+    plot(t, T);
+
+    res = Tm - A*c;
+    resnorm = norm(res).^2;
+end

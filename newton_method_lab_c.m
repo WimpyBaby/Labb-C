@@ -15,7 +15,7 @@ pf = @(t) pfmax/(1+((pfmax/p0)-1).*exp(-kf.*t));
 f = @(t) pfmax./(1+((pfmax./(p0))-1)*exp(-kf.*t)) - 1.2*(psmax*exp(-ks.*t)+psmin);
 fp = @(t) 4050*exp(0.045.*t) + ((696000*exp(-0.08.*t))./((29*exp(-0.08.*t)+1).^2));
 
-tol = 1e-8;
+tol = 1e-9;
 delta_t = 1;
 t = 20;
 
@@ -28,15 +28,20 @@ while abs(delta_t) > tol
     guess = [guess, t];
 end
 
-diffT1 = abs(guess(2:end)-guess(1:end-1));
-diffT2 = abs(diffT1(2:end)./(diffT1(1:end-1).^2));
+h1 = abs(guess(2:end)-guess(1:end-1));
+h2 = abs(h1(2:end)./(h1(1:end-1).^2));
 
-kon = log2(abs(diffT2(2)-diffT2(1))/(abs(diffT2(3)-diffT2(2))).^2);
+kon = log2(abs(h2(2)-h2(1))/(abs(h2(3)-h2(2))).^2);
+
+disp("Befolkningen i förorten är större än stan efter " + guess(end) + " år")
 
 %%
 % -----------------------------------2--------------------------------------
 
 load("STOCKHOLMSDATA.mat");
+
+%Använd inte samma ainterp för alla olika fasförskjutningar gör olika ainterp för alla olika ts värden 
+
 
 c3 = [];
 c1 = repelem(1, 70080);
@@ -120,11 +125,13 @@ disp("The integral is: " + TSim)
 % -------------------------------------4------------------------------------
 %
 t0 = 0;
-tspan = [t0, 23];
+tspan = [t0, 25];
 y0 = [0 0];
 [TOUT, YOUT]= ode45(@odesyst, tspan, y0);
-y = YOUT(1:end,1);
+y = YOUT(:,1);
 ymax = max(y);
+
+plot(TOUT, y)
 
 if ymax > 100
     disp("VARNING: DU KOMMER SLÅ I BACKEN")
