@@ -2,9 +2,11 @@ function f=odesyst(t,y)
 g = 9.81;
 cd = 0.25;
 k = 40;
-lambda = 8;
+%lambda = 8;
+lambda = 13;
 L = 30;
-m = 60;
+%m = 65;
+m = 130;
 
 u = y(1);
 v = y(2);
